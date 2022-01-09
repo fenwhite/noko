@@ -1,5 +1,7 @@
 package com.kinya.neko.bean;
 
+import com.google.gson.annotations.Expose;
+
 public class ResultWrapper<T> {
     private int code;
     private String info;

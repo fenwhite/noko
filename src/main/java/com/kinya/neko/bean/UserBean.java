@@ -3,9 +3,7 @@ package com.kinya.neko.bean;
 import com.google.gson.annotations.Expose;
 
 public class UserBean {
-    @Expose
     private String name;
-    @Expose
     private String password;
 
     public String getName() {
