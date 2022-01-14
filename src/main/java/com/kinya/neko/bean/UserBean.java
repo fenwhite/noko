@@ -1,7 +1,5 @@
 package com.kinya.neko.bean;
 
-import com.google.gson.annotations.Expose;
-
 public class UserBean {
     private String name;
     private String password;
