@@ -27,6 +27,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
      **/
     @ExceptionHandler(NekoException.class)
     public ResponseEntity<ErroResponse> handlerAtRunTime(NekoException ex, WebRequest request){
-        return new ResponseEntity(new ErroResponse(ex.getCode(), ex.getMsg()),HttpStatus.BAD_REQUEST);
+        return new ResponseEntity(new ErroResponse(ex),HttpStatus.BAD_REQUEST);
     }
 }
