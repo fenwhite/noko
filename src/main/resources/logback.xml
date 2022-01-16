@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration scan="true">
+    <property name="LOG_PATH" value="logs"/>
+    <property name="LOG_PATTERN" value="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+
+    <!-- 控制台日志输出 -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>
+                %d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n
+            </Pattern>
+        </layout>
+    </appender>
+
+    <!-- 日志文件滚动输出 -->
+    <appender name="FILE-ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/nekoService.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- This file rolls over at the beginning of each month into-->
+            <fileNamePattern>${LOG_PATH}/%d{yyyy-MM}/logfile%i.gz</fileNamePattern>
+            <!-- each archived file, size max 10MB -->
+            <maxFileSize>10MB</maxFileSize>
+            <!-- total size of all archive files, if total size > 50MB, it will delete old archived file -->
+            <totalSizeCap>250MB</totalSizeCap>
+            <!-- 7 days to keep -->
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 异步日志 -->
+    <appender name="ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="FILE-ROLLING" />
+    </appender>
+
+    <logger name="com.kinya.neko" level="INFO"/>
+
+    <root level="ERROR">
+        <appender-ref ref="ASYNC"/>
+        <appender-ref ref="CONSOLE"/>
+    </root>
+</configuration>
