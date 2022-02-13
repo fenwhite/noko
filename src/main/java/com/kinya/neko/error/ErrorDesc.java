@@ -7,7 +7,8 @@ package com.kinya.neko.error;
  */
 
 public enum ErrorDesc {
-    NOT_IMPL(100, "功能未实现");
+    NOT_IMPL(100, "功能未实现"),
+    PARAM_EMPTY(101,"传入参数为空");
 
     private final int code;
     private final String desc;
