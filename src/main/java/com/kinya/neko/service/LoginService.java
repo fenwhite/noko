@@ -3,6 +3,7 @@ package com.kinya.neko.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.kinya.neko.bean.UserBean;
 import com.kinya.neko.mapper.LoginMapper;
+import com.kinya.neko.utils.EncryptUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,9 +22,11 @@ public class LoginService extends NekoService{
     public boolean login(UserBean loginUser){
         QueryWrapper<UserBean> cond = new QueryWrapper<>();
         cond.eq("name", loginUser.getName());
-        // return userbead with user password
-        UserBean pas = loginMapper.selectOne(cond);
-        return StringUtils.equals(loginUser.getPassword(), pas.getPassword());
+        UserBean cipherInfo = loginMapper.selectOne(cond);
+
+        String password = EncryptUtil.decryptWithAES(cipherInfo.getPassword(), cipherInfo.getSalt());
+
+        return StringUtils.equals(loginUser.getPassword(), password);
     }
 
 }

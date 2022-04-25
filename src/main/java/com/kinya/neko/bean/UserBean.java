@@ -8,6 +8,8 @@ public class UserBean {
     private String name;
     @TableField("pswd")
     private String password;
+    @TableField("salt")
+    private String salt;
 
     public String getName() {
         return name;
@@ -23,5 +25,13 @@ public class UserBean {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getSalt() {
+        return salt;
+    }
+
+    public void setSalt(String salt) {
+        this.salt = salt;
     }
 }

@@ -5,6 +5,7 @@ import com.kinya.neko.bean.UserBean;
 import com.kinya.neko.error.ErrorDesc;
 import com.kinya.neko.error.exception.NekoException;
 import com.kinya.neko.service.LoginService;
+import com.kinya.neko.utils.EncryptUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -25,8 +26,11 @@ public class LoginController extends NekoController {
         if(StringUtils.isEmpty(pass) || StringUtils.isEmpty(name)){
             throw new NekoException(ErrorDesc.PARAM_EMPTY);
         }
+
+        String plaintText = EncryptUtil.decryptWithRSA(pass);
+
         requestUser.setName(name);
-        requestUser.setPassword(pass);
+        requestUser.setPassword(plaintText);
 
         if(loginService.login(requestUser)) {
             return new ResultWrapper(new Object());
