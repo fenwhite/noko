@@ -78,6 +78,7 @@ public class EncryptUtil {
                 cipher.init(Cipher.ENCRYPT_MODE, secret, getIvSpec());
 
                 // encrypt the input string
+                plainText = plainText + slat;
                 byte[] cipherText = cipher.doFinal(plainText.getBytes());
                 // why need to use base64?
                 ans = Base64.getEncoder().encodeToString(cipherText);
@@ -95,7 +96,8 @@ public class EncryptUtil {
                 Cipher cipher = Cipher.getInstance(CIPHER_INST);
                 cipher.init(Cipher.DECRYPT_MODE, secret, getIvSpec());
                 byte[] plainText = cipher.doFinal(Base64.getDecoder().decode(cipherText));
-                ans = new String(plainText);
+                String salText = new String(plainText);
+                ans = salText.substring(0, salText.length() - slat.length());
             }finally {
                 return ans;
             }
