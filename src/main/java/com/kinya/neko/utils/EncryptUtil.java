@@ -9,6 +9,7 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.File;
 import java.io.InputStream;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -149,15 +150,17 @@ public class EncryptUtil {
     }
 
     private static class RSA {
-        private static String publicPath = "";
-        private static String privatePath = "";
+        private static String privatePath = "pkcs8.key";
+        private static String publicPath = "publickey.crt";
 
         public static PrivateKey getPrivateKey() throws Exception {
-            File f = new File(privatePath);
-            String key = new String(Files.readAllBytes(f.toPath()), Charset.defaultCharset());
-            String pem = key.replace("-----BEGIN PRIVATE  KEY-----", "")
-                    .replaceAll(System.lineSeparator(), "")
-                    .replace("-----END PRIVATE  KEY-----", "");
+            URL privateKeyRes = EncryptUtil.class.getClassLoader().getResource(privatePath);
+            File privateFile = new File(privateKeyRes.getFile());
+
+            String key = new String(Files.readAllBytes(privateFile.toPath()), Charset.defaultCharset());
+            String pem = key.replace("-----BEGIN PRIVATE KEY-----", "")
+                    .replaceAll("\n", "")
+                    .replace("-----END PRIVATE KEY-----", "");
             byte[] decode = Base64.getDecoder().decode(pem);
 
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
@@ -166,11 +169,12 @@ public class EncryptUtil {
         }
 
         public static PublicKey getPublicKey() throws Exception {
-            File f = new File(publicPath);
-            String key = new String(Files.readAllBytes(f.toPath()), Charset.defaultCharset());
-            String pem = key.replace("-----BEGIN PUBLIC   KEY-----", "")
-                    .replaceAll(System.lineSeparator(), "")
-                    .replace("-----END PUBLIC   KEY-----", "");
+            URL publicKeyUrl = EncryptUtil.class.getClassLoader().getResource(publicPath);
+            File publicFile = new File(publicKeyUrl.getFile());
+            String key = new String(Files.readAllBytes(publicFile.toPath()), Charset.defaultCharset());
+            String pem = key.replace("-----BEGIN PUBLIC KEY-----", "")
+                    .replaceAll("\n", "")
+                    .replace("-----END PUBLIC KEY-----", "");
             byte[] decode = Base64.getDecoder().decode(pem);
 
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
