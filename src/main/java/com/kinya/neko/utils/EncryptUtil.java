@@ -58,6 +58,7 @@ public class EncryptUtil {
         public static final String KEY_PASS = "nekopara";
         // param of SecretKeyFactory.getInstance
         public static final String KEYSPEC_INST = "PBKDF2WithHmacSHA256";
+        // algorithm/mode/padding
         public static final String CIPHER_INST = "AES/CBC/PKCS5PADDING";
 
         public static final String AES = "AES";
@@ -150,6 +151,8 @@ public class EncryptUtil {
     }
 
     private static class RSA {
+        private static String INST = "RSA/ECB/PKCS1Padding";
+
         private static String privatePath = "pkcs8.key";
         private static String publicPath = "publickey.crt";
 
@@ -163,7 +166,7 @@ public class EncryptUtil {
                     .replace("-----END PRIVATE KEY-----", "");
             byte[] decode = Base64.getDecoder().decode(pem);
 
-            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            KeyFactory keyFactory = KeyFactory.getInstance(INST);
             PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(decode);
             return keyFactory.generatePrivate(keySpec);
         }
@@ -206,7 +209,7 @@ public class EncryptUtil {
                 // read private-key from file
                 Key privateKey = getPrivateKey();
                 // do decrypt
-                Cipher cipher = Cipher.getInstance("RSA");
+                Cipher cipher = Cipher.getInstance(INST);
                 cipher.init(Cipher.DECRYPT_MODE, privateKey);
                 byte[] plainData = cipher.doFinal(data);
                 // build String with charset
