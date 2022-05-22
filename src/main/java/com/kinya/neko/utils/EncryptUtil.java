@@ -43,6 +43,10 @@ public class EncryptUtil {
         return RSA.decrypt(cipherText);
     }
 
+    public static Key getAESecretKey(String alias, String pass) throws Exception {
+        return AES.getSecretKey(alias, pass);
+    }
+
     public static String getSlat() {
         return KeyGenerators.string().generateKey();
     }
@@ -73,7 +77,7 @@ public class EncryptUtil {
             String ans = null;
 
             try {
-                Key secret = getSecretKey(plainText, slat);
+                Key secret = getSecretKey(ALIAS, KEY_PASS);
 
                 // configure a cipher instance
                 Cipher cipher = Cipher.getInstance(CIPHER_INST);
@@ -92,7 +96,7 @@ public class EncryptUtil {
         public static String decrypt(String cipherText,String slat) {
             String ans = null;
             try{
-                Key secret = getSecretKey(cipherText, slat);
+                Key secret = getSecretKey(ALIAS, KEY_PASS);
 
                 // configure a cipher instance
                 Cipher cipher = Cipher.getInstance(CIPHER_INST);
@@ -122,32 +126,23 @@ public class EncryptUtil {
         /**
          * get key from file
          *
-         * @param text
-         * @param slat
+         * @param alias key alias
+         * @param pass password of the alias
          * @return SecretKey
-         * @throws Exception
+         * @throws Exception maybe password is worry
          */
-        private static Key getSecretKey(String text,String slat) throws Exception {
+        private static Key getSecretKey(String alias, String pass) throws Exception {
             Key secret = null;
-            // try to read from file(keyStore)
             InputStream keyStoreStream = EncryptUtil.class.getClassLoader().getResourceAsStream(KEYSTORE_PATH);
             KeyStore keyStore = KeyStore.getInstance(KEYSTORE_FORMAT);
             // password to access keystore
             keyStore.load(keyStoreStream, KEYSTORE_PASS.toCharArray());
-            if(keyStore.containsAlias(ALIAS)) {
+            if(keyStore.containsAlias(alias)) {
                 // password to access key
-                secret = keyStore.getKey(ALIAS, KEY_PASS.toCharArray());
-            } else {
-                SecretKeyFactory factory = SecretKeyFactory.getInstance(KEYSPEC_INST);
-                KeySpec spec = new PBEKeySpec(text.toCharArray(),
-                        slat.getBytes(), 65536, KEY_SIZE);
-                secret = new SecretKeySpec(factory.generateSecret(spec).getEncoded(),
-                        AES);
+                secret = keyStore.getKey(alias, pass.toCharArray());
             }
-
             return secret;
         }
-
     }
 
     private static class RSA {
