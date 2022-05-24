@@ -3,18 +3,19 @@ package com.kinya.neko.utils;
 import org.springframework.security.crypto.keygen.KeyGenerators;
 
 import javax.crypto.Cipher;
-import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.PBEKeySpec;
-import javax.crypto.spec.SecretKeySpec;
 import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.security.*;
-import java.security.spec.KeySpec;
+import java.security.Key;
+import java.security.KeyFactory;
+import java.security.KeyStore;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.SecureRandom;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
@@ -43,7 +44,7 @@ public class EncryptUtil {
         return RSA.decrypt(cipherText);
     }
 
-    public static Key getAESecretKey(String alias, String pass) throws Exception {
+    public static Key getAESecretKey(String alias, String pass) {
         return AES.getSecretKey(alias, pass);
     }
 
@@ -131,15 +132,21 @@ public class EncryptUtil {
          * @return SecretKey
          * @throws Exception maybe password is worry
          */
-        private static Key getSecretKey(String alias, String pass) throws Exception {
+        private static Key getSecretKey(String alias, String pass) {
             Key secret = null;
             InputStream keyStoreStream = EncryptUtil.class.getClassLoader().getResourceAsStream(KEYSTORE_PATH);
-            KeyStore keyStore = KeyStore.getInstance(KEYSTORE_FORMAT);
-            // password to access keystore
-            keyStore.load(keyStoreStream, KEYSTORE_PASS.toCharArray());
-            if(keyStore.containsAlias(alias)) {
-                // password to access key
-                secret = keyStore.getKey(alias, pass.toCharArray());
+            KeyStore keyStore = null;
+            try {
+                keyStore = KeyStore.getInstance(KEYSTORE_FORMAT);
+
+                // password to access keystore
+                keyStore.load(keyStoreStream, KEYSTORE_PASS.toCharArray());
+                if(keyStore.containsAlias(alias)) {
+                    // password to access key
+                    secret = keyStore.getKey(alias, pass.toCharArray());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
             return secret;
         }
