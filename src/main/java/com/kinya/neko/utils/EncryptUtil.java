@@ -168,7 +168,7 @@ public class EncryptUtil {
                     .replace("-----END PRIVATE KEY-----", "");
             byte[] decode = Base64.getDecoder().decode(pem);
 
-            KeyFactory keyFactory = KeyFactory.getInstance(INST);
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(decode);
             return keyFactory.generatePrivate(keySpec);
         }

@@ -29,7 +29,7 @@ import org.springframework.stereotype.Component;
  * }
  * </code>
  */
-@Component
+//@Component
 /*
  * Spring Component annotation is used to denote a class as Component.
  * It means that Spring framework will autodetect these classes for dependency injection

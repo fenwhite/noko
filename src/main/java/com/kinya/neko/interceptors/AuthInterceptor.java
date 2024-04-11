@@ -9,6 +9,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * @author ：white
@@ -18,8 +19,8 @@ import javax.servlet.http.HttpServletResponse;
 @Component
 public class AuthInterceptor implements HandlerInterceptor {
     private final static String TOKEN = "Token";
-    private static final String LOGIN_MATCH = "login";
-    private static final String LOGOUT_MATCH = "NULL";
+    private static final String LOGIN_MATCH = "/login";
+    private static final String LOGOUT_MATCH = "/NULL";
 
     /**
      * will be called before the actual handler is executed
@@ -50,11 +51,14 @@ public class AuthInterceptor implements HandlerInterceptor {
         return false;
     }
 
+    // todo https://cloud.tencent.com/developer/article/1504237
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
         String token = request.getHeader(TOKEN);
         if(StringUtils.isNoneBlank(token)) {
+            // TODO get user name
             response.setHeader(TOKEN, token);
+            response.flushBuffer();
             return;
         }
         doWhenLogin(request, response);
@@ -71,9 +75,17 @@ public class AuthInterceptor implements HandlerInterceptor {
         String uri = request.getRequestURI();
         if(uri.startsWith(LOGIN_MATCH)) {
             String userName = request.getParameter("name");
+            // only for test
+            userName = "fgl";
             if (StringUtils.isNoneBlank(userName)) {
                 String token = TokenUtils.create(userName);
-                response.setHeader(TOKEN, token);
+                response.setStatus(400);
+                response.addHeader(TOKEN, token);
+                try {
+                    response.getWriter().write(100);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
